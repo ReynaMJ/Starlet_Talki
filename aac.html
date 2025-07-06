@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talki - AAC Communication Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .xp-counter {
+            background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .my-room-btn {
+            background: linear-gradient(45deg, #4ecdc4, #45b7aa);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(76, 205, 196, 0.3);
+        }
+
+        .my-room-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 205, 196, 0.4);
+        }
+
+        .recording-section {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            text-align: center;
+        }
+
+        .recording-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .record-btn, .stop-btn, .play-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stop-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .play-btn {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+
+        .record-btn:hover, .stop-btn:hover, .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,107,107,0.4);
+        }
+
+        .record-btn:disabled, .stop-btn:disabled, .play-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recording-status {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .recording-status.recording {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .categories {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .category-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(255,255,255,0.3);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .phrase-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phrase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #4ecdc4;
+        }
+
+        .phrase-card:active {
+            transform: translateY(-2px);
+        }
+
+        .phrase-card.speaking {
+            animation: speakGlow 0.6s ease-in-out;
+            border-color: #ffd93d;
+        }
+
+        @keyframes speakGlow {
+            0% { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+            50% { box-shadow: 0 0 30px rgba(255, 217, 61, 0.8), 0 15px 40px rgba(255, 217, 61, 0.3); }
+            100% { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        }
+
+        .phrase-emoji {
+            font-size: 60px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .phrase-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            display: block;
+        }
+
+        .phrase-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .xp-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: xpPopup 1s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes xpPopup {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 15px;
+            }
+            
+            .phrase-card {
+                padding: 20px;
+            }
+            
+            .phrase-emoji {
+                font-size: 50px;
+            }
+            
+            .phrase-text {
+                font-size: 18px;
+            }
+
+            .recording-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .categories {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-btn {
+                width: 200px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🗣️</div>
+                <div class="logo-text">
+                    <h1>Talki</h1>
+                    <p>Let's talk together!</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="xp-counter">
+                    <span>⭐</span>
+                    <span id="xp-display">0 XP</span>
+                </div>
+                <button class="my-room-btn" onclick="openMyRoom()">
+                    🎮 My Room
+                </button>
+            </div>
+        </div>
+
+        <div class="recording-section">
+            <div class="recording-controls">
+                <button class="record-btn" id="recordBtn" onclick="startRecording()">
+                    🎤 Start Recording
+                </button>
+                <button class="stop-btn" id="stopBtn" onclick="stopRecording()" disabled>
+                    ⏹️ Stop Recording
+                </button>
+                <button class="play-btn" id="playBtn" onclick="playRecording()" disabled>
+                    ▶️ Play Recording
+                </button>
+            </div>
+            <div class="recording-status" id="recordingStatus">Ready to record your voice!</div>
+        </div>
+
+        <div class="categories">
+            <button class="category-btn active" onclick="showCategory('Feelings')">
+                😊 Feelings
+            </button>
+            <button class="category-btn" onclick="showCategory('Needs')">
+                🍔 Needs
+            </button>
+            <button class="category-btn" onclick="showCategory('Favourites')">
+                ⭐ Favourites
+            </button>
+            <button class="category-btn" onclick="showCategory('GIFs')">
+                🎬 GIFs
+            </button>
+        </div>
+
+        <div class="cards-grid" id="cards-container">
+            <!-- Cards will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Categories data
+        const categories = {
+            'Feelings': [
+                { emoji: '😊', text: 'I am happy' },
+                { emoji: '😢', text: 'I am sad' },
+                { emoji: '😡', text: 'I am angry' },
+                { emoji: '😴', text: 'I am tired' },
+                { emoji: '😰', text: 'I am worried' },
+                { emoji: '🤗', text: 'I want a hug' },
+                { emoji: '😵', text: 'I am confused' },
+                { emoji: '😃', text: 'I am excited' }
+            ],
+            'Needs': [
+                { emoji: '🍔', text: 'I want food' },
+                { emoji: '💧', text: 'I want water' },
+                { emoji: '🚽', text: 'I need the bathroom' },
+                { emoji: '🛏️', text: 'I want to rest' },
+                { emoji: '🎮', text: 'I want to play' },
+                { emoji: '📖', text: 'I want to read' },
+                { emoji: '🎵', text: 'I want music' },
+                { emoji: '👥', text: 'I want help' }
+            ],
+            'Favourites': [
+                { emoji: '🍎', text: 'I want an apple' },
+                { emoji: '🍫', text: 'I want chocolate' },
+                { emoji: '🥛', text: 'I want milk' },
+                { emoji: '🎮', text: 'I want to play Minecraft' },
+                { emoji: '🍕', text: 'I want pizza' },
+                { emoji: '🎈', text: 'I want balloons' },
+                { emoji: '🐶', text: 'I love dogs' },
+                { emoji: '🌈', text: 'I see a rainbow' }
+            ],
+            'GIFs': [
+                { 
+                    image: 'https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif', 
+                    text: 'I am dancing' 
+                },
+                { 
+                    image: 'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif', 
+                    text: 'High five!' 
+                },
+                { 
+                    image: 'https://media.giphy.com/media/26u4cqiYI30juCOGY/giphy.gif', 
+                    text: 'I am clapping' 
+                }
+            ]
+        };
+
+        // Global variables
+        let currentCategory = 'Feelings';
+        let xp = 0;
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordedAudio = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadXP();
+            showCategory('Feelings');
+        });
+
+        // Load XP from localStorage
+        function loadXP() {
+            const savedXP = localStorage.getItem('talki-xp');
+            if (savedXP) {
+                xp = parseInt(savedXP, 10);
+                updateXPDisplay();
+            }
+        }
+
+        // Save XP to localStorage
+        function saveXP() {
+            localStorage.setItem('talki-xp', xp.toString());
+        }
+
+        // Update XP display
+        function updateXPDisplay() {
+            document.getElementById('xp-display').textContent = `${xp} XP`;
+        }
+
+        // Show XP popup
+        function showXPPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'xp-popup';
+            popup.textContent = '+1 XP!';
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                document.body.removeChild(popup);
+            }, 1000);
+        }
+
+        // Speak function with XP reward
+        function speak(text, cardElement) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.8;
+                utterance.pitch = 1.1;
+                utterance.volume = 0.9;
+
+                // Add speaking animation
+                cardElement.classList.add('speaking');
+                setTimeout(() => {
+                    cardElement.classList.remove('speaking');
+                }, 600);
+
+                // Add XP
+                xp += 1;
+                updateXPDisplay();
+                saveXP();
+                showXPPopup();
+
+                // Speak the text
+                speechSynthesis.speak(utterance);
+            } else {
+                alert('Speech synthesis not supported in this browser.');
+            }
+        }
+
+        // Show category function
+        function showCategory(category) {
+            currentCategory = category;
+            
+            // Update active category button
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+                // Check if this button's text content includes the category name
+                if (btn.textContent.includes(category)) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Create cards for the category
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            categories[category].forEach(phrase => {
+                const card = document.createElement('div');
+                card.className = 'phrase-card';
+                
+                // Handle both emoji and image cards
+                if (phrase.emoji) {
+                    card.innerHTML = `
+                        <span class="phrase-emoji">${phrase.emoji}</span>
+                        <div class="phrase-text">${phrase.text}</div>
+                    `;
+                } else if (phrase.image) {
+                    card.innerHTML = `
+                        <img src="${phrase.image}" alt="${phrase.text}" class="phrase-image">
+                        <div class="phrase-text">${phrase.text}</div>
+                    `;
+                }
+                
+                card.addEventListener('click', function() {
+                    speak(phrase.text, this);
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        // Recording functions
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    recordedAudio = URL.createObjectURL(audioBlob);
+                    
+                    // Update UI
+                    document.getElementById('recordBtn').disabled = false;
+                    document.getElementById('stopBtn').disabled = true;
+                    document.getElementById('playBtn').disabled = false;
+                    document.getElementById('recordingStatus').textContent = 'Recording saved! Click play to listen.';
+                    document.getElementById('recordingStatus').classList.remove('recording');
+                };
+
+                mediaRecorder.start();
+
+                // Update UI
+                document.getElementById('recordBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('recordingStatus').textContent = '🔴 Recording in progress...';
+                document.getElementById('recordingStatus').classList.add('recording');
+
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                alert('Could not access microphone. Please check your permissions.');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function playRecording() {
+            if (recordedAudio) {
+                const audio = new Audio(recordedAudio);
+                audio.play();
+                
+                // Add XP for playing custom recording
+                xp += 1;
+                updateXPDisplay();
+                saveXP();
+                showXPPopup();
+            }
+        }
+
+        // Open My Room (placeholder function)
+        function openMyRoom() {
+            alert('🎮 My Room is coming soon! This will be your personal customization space.');
+        }
+
+        // Initialize with Feelings category
+        window.addEventListener('load', function() {
+            showCategory('Feelings');
+        });
+    </script>
+</body>
+</html>

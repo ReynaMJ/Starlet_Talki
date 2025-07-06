@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talki - My Room</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+        }
+
+        .logo-text h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .xp-counter {
+            background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #4ecdc4, #45b7aa);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(76, 205, 196, 0.3);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(76, 205, 196, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px 300px;
+            gap: 25px;
+            height: calc(100vh - 200px);
+        }
+
+        .room-section {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .room-title h2 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .room-title p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .room-canvas {
+            width: 100%;
+            height: calc(100% - 80px);
+            background-image: url('./assets/room.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 20px;
+            position: relative;
+            border: 3px solid #f0f0f0;
+            overflow: hidden;
+        }
+
+        .room-canvas::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.1);
+            border-radius: 17px;
+        }
+
+        .placed-item {
+            position: absolute;
+            cursor: move;
+            transition: transform 0.2s ease;
+            z-index: 10;
+            user-select: none;
+        }
+
+        .placed-item:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .placed-item.dragging {
+            transform: scale(1.1);
+            z-index: 100;
+            filter: brightness(1.2);
+        }
+
+        .placed-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .shop-section {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .storage-section {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .shop-title h2 {
+            background: linear-gradient(45deg, #ffd93d, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .storage-title h2 {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-title p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .shop-items, .storage-items {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+            padding-right: 10px;
+        }
+
+        .shop-items::-webkit-scrollbar, .storage-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .shop-items::-webkit-scrollbar-track, .storage-items::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .shop-items::-webkit-scrollbar-thumb, .storage-items::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .shop-item, .storage-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .shop-item:hover, .storage-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .shop-item:hover {
+            border-color: #4ecdc4;
+        }
+
+        .storage-item:hover {
+            border-color: #28a745;
+        }
+
+        .shop-item.affordable {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: #28a745;
+        }
+
+        .shop-item.expensive {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border-color: #dc3545;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .shop-item.owned {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-color: #ffc107;
+        }
+
+        .storage-item {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-color: #28a745;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        .item-image img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .item-cost {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .shop-item.owned .item-cost {
+            color: #28a745;
+        }
+
+        .shop-item.expensive .item-cost {
+            color: #dc3545;
+        }
+
+        .storage-count {
+            font-size: 14px;
+            font-weight: bold;
+            color: #28a745;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .buy-button, .place-button {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .buy-button:hover, .place-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .buy-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .success-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: successPopup 2s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes successPopup {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .clear-room-btn {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            align-self: center;
+        }
+
+        .clear-room-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        @media (max-width: 1400px) {
+            .main-content {
+                grid-template-columns: 1fr 300px 250px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto auto;
+                height: auto;
+            }
+            
+            .room-section {
+                height: 500px;
+            }
+            
+            .shop-items, .storage-items {
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .main-content {
+                gap: 15px;
+            }
+            
+            .room-section, .shop-section, .storage-section {
+                padding: 15px;
+            }
+            
+            .shop-item, .storage-item {
+                padding: 12px;
+            }
+            
+            .item-image {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .item-image img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🏠</div>
+                <div class="logo-text">
+                    <h1>My Room</h1>
+                    <p>Decorate your space!</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="xp-counter">
+                    <span>⭐</span>
+                    <span id="xp-display">0 XP</span>
+                </div>
+                <a href="./aac.html" class="back-btn">
+                    ← Back to Talki
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="room-section">
+                <div class="room-title">
+                    <h2>🏠 Your Room</h2>
+                    <p>Drag items around to decorate!</p>
+                </div>
+                <div class="room-canvas" id="roomCanvas">
+                    <!-- Placed items will appear here -->
+                </div>
+            </div>
+
+            <div class="shop-section">
+                <div class="section-title shop-title">
+                    <h2>🛍️ Item Shop</h2>
+                    <p>Buy items with your XP!</p>
+                </div>
+                <div class="shop-items" id="shopItems">
+                    <!-- Shop items will be populated by JavaScript -->
+                </div>
+                <button class="clear-room-btn" onclick="clearRoom()">
+                    🗑️ Clear Room
+                </button>
+            </div>
+
+            <div class="storage-section">
+                <div class="section-title storage-title">
+                    <h2>📦 My Storage</h2>
+                    <p>Items you own</p>
+                </div>
+                <div class="storage-items" id="storageItems">
+                    <!-- Storage items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Shop items data with your custom assets
+        const shopItems = [
+            {
+                id: 'teddy',
+                name: 'Teddy Bear',
+                cost: 10,
+                emoji: '🧸',
+                image: './assets/talki-teddy.png'
+            },
+            {
+                id: 'lamp',
+                name: 'Desk Lamp',
+                cost: 15,
+                emoji: '💡',
+                image: './assets/lamp.png'
+            },
+            {
+                id: 'ball',
+                name: 'Soccer Ball',
+                cost: 8,
+                emoji: '⚽',
+                image: './assets/soccer_ball.png'
+            },
+            {
+                id: 'plant',
+                name: 'House Plant',
+                cost: 12,
+                emoji: '🪴',
+                image: './assets/house plant.png'
+            },
+            {
+                id: 'books',
+                name: 'Stack of Books',
+                cost: 20,
+                emoji: '📚',
+                image: './assets/books.png'
+            },
+            {
+                id: 'guitar',
+                name: 'Guitar',
+                cost: 25,
+                emoji: '🎸',
+                image: './assets/guitar.png'
+            },
+            {
+                id: 'clock',
+                name: 'Wall Clock',
+                cost: 18,
+                emoji: '🕐',
+                image: './assets/clock.png'
+            },
+            {
+                id: 'toy_car',
+                name: 'Toy Car',
+                cost: 6,
+                emoji: '🚗',
+                image: './assets/toy car.png'
+            },
+            {
+                id: 'rainbow',
+                name: 'Rainbow Poster',
+                cost: 14,
+                emoji: '🌈',
+                image: './assets/rainbow.png'
+            },
+            {
+                id: 'star_light',
+                name: 'Star Light',
+                cost: 22,
+                emoji: '⭐',
+                image: './assets/star.png'
+            }
+        ];
+
+        // Global variables
+        let currentXP = 0;
+        let ownedItems = [];
+        let placedItems = [];
+        let draggedItem = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        // Initialize the room
+        document.addEventListener('DOMContentLoaded', function() {
+            loadXP();
+            loadRoomData();
+            renderShopItems();
+            renderStorageItems();
+            renderPlacedItems();
+        });
+
+        // Load XP from localStorage (shared with AAC page)
+        function loadXP() {
+            const savedXP = localStorage.getItem('talki-xp');
+            if (savedXP) {
+                currentXP = parseInt(savedXP, 10);
+                updateXPDisplay();
+            }
+        }
+
+        // Update XP display
+        function updateXPDisplay() {
+            document.getElementById('xp-display').textContent = `${currentXP} XP`;
+        }
+
+        // Save XP to localStorage
+        function saveXP() {
+            localStorage.setItem('talki-xp', currentXP.toString());
+        }
+
+        // Load room data from localStorage
+        function loadRoomData() {
+            const savedOwnedItems = localStorage.getItem('talki-owned-items');
+            const savedPlacedItems = localStorage.getItem('talki-placed-items');
+            
+            if (savedOwnedItems) {
+                ownedItems = JSON.parse(savedOwnedItems);
+            }
+            
+            if (savedPlacedItems) {
+                placedItems = JSON.parse(savedPlacedItems);
+            }
+        }
+
+        // Save room data to localStorage
+        function saveRoomData() {
+            localStorage.setItem('talki-owned-items', JSON.stringify(ownedItems));
+            localStorage.setItem('talki-placed-items', JSON.stringify(placedItems));
+        }
+
+        // Get item count in storage
+        function getItemCount(itemId) {
+            return ownedItems.filter(id => id === itemId).length;
+        }
+
+        // Render shop items
+        function renderShopItems() {
+            const container = document.getElementById('shopItems');
+            container.innerHTML = '';
+
+            shopItems.forEach(item => {
+                const ownedCount = getItemCount(item.id);
+                const canAfford = currentXP >= item.cost;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = `shop-item ${ownedCount > 0 ? 'owned' : canAfford ? 'affordable' : 'expensive'}`;
+                
+                itemElement.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span style="display: none;">${item.emoji}</span>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-cost">
+                            <span>⭐</span>
+                            <span>${item.cost} XP</span>
+                        </div>
+                    </div>
+                    <button class="buy-button" onclick="buyItem('${item.id}')" ${!canAfford ? 'disabled' : ''}>
+                        ${canAfford ? 'Buy' : 'Need More XP'}
+                    </button>
+                `;
+
+                container.appendChild(itemElement);
+            });
+        }
+
+        // Render storage items
+        function renderStorageItems() {
+            const container = document.getElementById('storageItems');
+            container.innerHTML = '';
+
+            // Get unique owned items with counts
+            const uniqueItems = [...new Set(ownedItems)];
+            
+            if (uniqueItems.length === 0) {
+                container.innerHTML = '<div class="empty-state">No items in storage yet!<br>Buy some items from the shop.</div>';
+                return;
+            }
+
+            uniqueItems.forEach(itemId => {
+                const item = shopItems.find(i => i.id === itemId);
+                if (!item) return;
+                
+                const count = getItemCount(itemId);
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'storage-item';
+                
+                itemElement.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span style="display: none;">${item.emoji}</span>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="storage-count">
+                            <span>📦</span>
+                            <span>Owned: ${count}</span>
+                        </div>
+                    </div>
+                    <button class="place-button" onclick="placeItemFromStorage('${item.id}')">
+                        Place in Room
+                    </button>
+                `;
+
+                container.appendChild(itemElement);
+            });
+        }
+
+        // Buy an item
+        function buyItem(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if (!item || currentXP < item.cost) {
+                return;
+            }
+
+            // Deduct XP and add to owned items
+            currentXP -= item.cost;
+            ownedItems.push(itemId);
+            
+            // Save data
+            saveXP();
+            saveRoomData();
+            
+            // Update displays
+            updateXPDisplay();
+            renderShopItems();
+            renderStorageItems();
+            
+            // Show success popup
+            showSuccessPopup(`🎉 You bought ${item.name}!`);
+        }
+
+        // Place an item from storage
+        function placeItemFromStorage(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            const ownedCount = getItemCount(itemId);
+            
+            if (!item || ownedCount === 0) {
+                return;
+            }
+
+            // Generate unique instance ID
+            const instanceId = `${itemId}_${Date.now()}`;
+            
+            // Add to placed items with random position
+            const roomCanvas = document.getElementById('roomCanvas');
+            const canvasRect = roomCanvas.getBoundingClientRect();
+            
+            const newPlacedItem = {
+                instanceId: instanceId,
+                itemId: itemId,
+                x: Math.random() * (canvasRect.width - 100) + 50,
+                y: Math.random() * (canvasRect.height - 100) + 50
+            };
+            
+            placedItems.push(newPlacedItem);
+            saveRoomData();
+            renderPlacedItems();
+            
+            showSuccessPopup(`✨ ${item.name} placed in your room!`);
+        }
+
+        // Place an item in the room (legacy function for backward compatibility)
+        function placeItem(itemId) {
+            placeItemFromStorage(itemId);
+        }
+
+        // Render placed items in the room
+        function renderPlacedItems() {
+            const roomCanvas = document.getElementById('roomCanvas');
+            
+            // Clear existing placed items
+            const existingItems = roomCanvas.querySelectorAll('.placed-item');
+            existingItems.forEach(item => item.remove());
+            
+            // Add all placed items
+            placedItems.forEach(placedItem => {
+                const item = shopItems.find(i => i.id === placedItem.itemId);
+                if (!item) return;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'placed-item';
+                itemElement.style.left = `${placedItem.x}px`;
+                itemElement.style.top = `${placedItem.y}px`;
+                itemElement.dataset.instanceId = placedItem.instanceId;
+                
+                itemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <span style="display: none; font-size: 60px;">${item.emoji}</span>
+                `;
+                
+                // Add drag functionality
+                addDragFunctionality(itemElement);
+                
+                roomCanvas.appendChild(itemElement);
+            });
+        }
+
+        // Add drag and drop functionality
+        function addDragFunctionality(element) {
+            element.addEventListener('mousedown', startDrag);
+            element.addEventListener('touchstart', startDrag, { passive: false });
+        }
+
+        function startDrag(e) {
+            e.preventDefault();
+            draggedItem = e.currentTarget;
+            draggedItem.classList.add('dragging');
+            
+            const rect = draggedItem.getBoundingClientRect();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            
+            dragOffset.x = clientX - rect.left;
+            dragOffset.y = clientY - rect.top;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', stopDrag);
+        }
+
+        function drag(e) {
+            if (!draggedItem) return;
+            e.preventDefault();
+            
+            const roomCanvas = document.getElementById('roomCanvas');
+            const canvasRect = roomCanvas.getBoundingClientRect();
+            
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            
+            let newX = clientX - canvasRect.left - dragOffset.x;
+            let newY = clientY - canvasRect.top - dragOffset.y;
+            
+            // Keep item within canvas bounds
+            newX = Math.max(0, Math.min(newX, canvasRect.width - 80));
+            newY = Math.max(0, Math.min(newY, canvasRect.height - 80));
+            
+            draggedItem.style.left = `${newX}px`;
+            draggedItem.style.top = `${newY}px`;
+        }
+
+        function stopDrag() {
+            if (!draggedItem) return;
+            
+            draggedItem.classList.remove('dragging');
+            
+            // Update position in placedItems array
+            const instanceId = draggedItem.dataset.instanceId;
+            const placedItem = placedItems.find(item => item.instanceId === instanceId);
+            if (placedItem) {
+                placedItem.x = parseInt(draggedItem.style.left);
+                placedItem.y = parseInt(draggedItem.style.top);
+                saveRoomData();
+            }
+            
+            draggedItem = null;
+            
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', stopDrag);
+        }
+
+        // Clear all items from room
+        function clearRoom() {
+            if (placedItems.length === 0) {
+                showSuccessPopup('🏠 Room is already empty!');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to clear all items from your room? You will keep ownership of the items.')) {
+                placedItems = [];
+                saveRoomData();
+                renderPlacedItems();
+                showSuccessPopup('🧹 Room cleared!');
+            }
+        }
+
+        // Show success popup
+        function showSuccessPopup(message) {
+            const popup = document.createElement('div');
+            popup.className = 'success-popup';
+            popup.textContent = message;
+            document.body.appendChild(popup);
+
+            setTimeout(() => {
+                document.body.removeChild(popup);
+            }, 2000);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Reposition items if they're outside the new canvas bounds
+            const roomCanvas = document.getElementById('roomCanvas');
+            const canvasRect = roomCanvas.getBoundingClientRect();
+            
+            placedItems.forEach(placedItem => {
+                if (placedItem.x > canvasRect.width - 80) {
+                    placedItem.x = canvasRect.width - 80;
+                }
+                if (placedItem.y > canvasRect.height - 80) {
+                    placedItem.y = canvasRect.height - 80;
+                }
+            });
+            
+            saveRoomData();
+            renderPlacedItems();
+        });
+    </script>
+</body>
+</html>
